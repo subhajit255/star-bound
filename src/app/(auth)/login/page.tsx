@@ -16,13 +16,13 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [localError, setLocalError] = useState<string>("");
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  const { user, loading, isAuthenticated } = useSelector(
+  const { user, loading, isAuthenticated, error: reduxError } = useSelector(
     (state: RootState) => state.auth,
   );
+  const displayError = localError || reduxError;
 
   useEffect(() => {
     if (user) {
@@ -32,26 +32,13 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setIsLoading(true);
+    setLocalError("");
     if (!email || !password) {
-      setError("Please fill in all fields");
-      setIsLoading(false);
+      setLocalError("Please fill in all fields");
       return;
     }
 
-    try {
-      await dispatch(loginRequest({ email, password }));
-      if (isAuthenticated) {
-        router.push("/dashboard");
-      } else {
-        setError("Login failed. Please try again.");
-        setIsLoading(false);
-      }
-    } catch (err) {
-      setError("Login failed. Please try again.");
-      setIsLoading(false);
-    }
+    dispatch(loginRequest({ email, password }));
   };
 
   return (
@@ -95,9 +82,9 @@ export default function LoginPage() {
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
+            {displayError && (
               <div className="p-3 text-sm font-medium text-red-200 bg-red-900/50 border border-red-500/50 rounded-xl text-center">
-                {error}
+                {displayError}
               </div>
             )}
             <div className="space-y-4">
@@ -154,10 +141,10 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              disabled={isLoading}
+              disabled={loading}
               className="w-full h-12 text-base font-semibold rounded-xl shadow-lg shadow-primary/30 transition-transform active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100"
             >
-              {isLoading ? "Authenticating..." : "Sign In"}
+              {loading ? "Authenticating..." : "Sign In"}
             </Button>
 
             <div className="text-center text-sm text-white/60 pt-4">
