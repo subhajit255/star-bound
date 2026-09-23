@@ -16,6 +16,8 @@ import {
   Users, // Users
 } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { logoutRequest } from "@/store/slices/authSlice";
 import {
   Sidebar as SidebarComponent,
   SidebarContent,
@@ -45,6 +47,7 @@ const menuItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const dispatch = useDispatch();
 
   return (
     <SidebarComponent className="border-r-0">
@@ -105,9 +108,9 @@ export function Sidebar() {
         <SidebarMenu className="px-2">
           <SidebarMenuItem>
             <SidebarMenuButton
-              render={<a href="/login" />}
+              onClick={() => dispatch(logoutRequest())}
               tooltip="Logout"
-              className="text-sidebar-foreground/70 hover:text-white hover:bg-white/5 h-11 rounded-xl transition-all font-medium"
+              className="text-sidebar-foreground/70 hover:text-white hover:bg-white/5 h-11 rounded-xl transition-all font-medium cursor-pointer"
             >
               <LogOut className="size-5 opacity-80" />
               <span className="text-[15px]">Logout</span>

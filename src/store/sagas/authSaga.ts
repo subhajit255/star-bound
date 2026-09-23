@@ -49,11 +49,23 @@ function* handleGetProfile(): SagaIterator {
     yield put(getProfileFailure(message));
   }
 }
+function* handleLogout(): SagaIterator {
+  try {
+    yield put(logoutSuccess());
+    toast.success("Successfully logged out");
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
+  } catch (error: any) {
+    yield put(logoutFailure("Logout failed"));
+  }
+}
 
 const watchFunction = [
   (function* () {
     yield takeLatest(loginRequest.type, handleLogin);
     yield takeLatest(getProfileRequest.type, handleGetProfile);
+    yield takeLatest(logoutRequest.type, handleLogout);
   })(),
 ];
 
